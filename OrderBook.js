@@ -67,7 +67,8 @@ export class OrderBook{
                 break;
             case "ORDER_EXECUTE":
                 this.handleOrderExecute(payload, handler);
-            case "ORDER_CLSOED":
+                break;
+            case "ORDER_CLOSED":
                 this.handlerOrderClose(payload, handler);
                 break;
 
@@ -85,7 +86,13 @@ export class OrderBook{
         let order = this.orders.find(order => order.orderId === payload.orderId)
         if(order){
             order.closed = true;
+            
+                handler.reply(null,{
+                    closed: true
+                })
+            
         }
+        
     }
 
     /**
@@ -102,6 +109,7 @@ export class OrderBook{
             return;
 
         }
+        console.log("Sending order close request")
         const request = {
             orderId: payload.orderId,
             requestSender: this.id,
@@ -113,8 +121,7 @@ export class OrderBook{
             request,
             {},
             (err, data) => {
-                console.log("closed");
-                console.log(order.orderId)
+                console.log(data)
             }
 
         )
